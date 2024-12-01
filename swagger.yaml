@@ -1,0 +1,424 @@
+swagger: '2.0'
+info:
+  description: Node.js Rest API Matheus
+  version: '1.0.0'
+  title: Node Rest API documentation
+  termsOfService: 'http://swagger.io/terms/'
+  contact:
+    email: matheus.271222002@gmail.com
+  license:
+    name: Apache 2.0
+    url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
+host: localhost:3002
+basePath: /api
+schemes:
+- http
+paths:
+  /user/login:
+    post:
+      tags:
+        - User Module
+      summary: Login
+      description: API for Login
+      parameters:
+        - in: body
+          name: body
+          description: Login Payload
+          required: true
+          schema:
+            $ref: '#/definitions/User'
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Login Successfully
+          schema:
+            $ref: '#/definitions/ApiResponse'
+        '400':
+          description: Invalid Fields
+        '500':
+          description: Internal Server Error
+  /user/signup:
+    post:
+      tags:
+        - User Module
+      summary: Signup
+      description: API for Signup
+      parameters:
+        - in: body
+          name: body
+          description: Signup Payload
+          required: true
+          schema:
+            $ref: '#/definitions/User'
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Signup Successfully
+          schema:
+            $ref: '#/definitions/ApiResponse'
+        '400':
+          description: Invalid Fields
+        '500':
+          description: Internal Server Error
+  /envelopes:
+    post:
+      security:
+        - Bearer: []
+      tags:
+        - Envelope Module
+      summary: Envelope API
+      description: API for creating envelope
+      parameters:
+        - in: body
+          name: body
+          description: Create Envelope Payload
+          required: true
+          schema:
+            $ref: '#/definitions/Envelopes'
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Envelope Created Successfully
+          schema:
+            $ref: '#/definitions/ApiResponse'
+        '400':
+          description: Invalid Fields
+        '500':
+          description: Internal Server Error
+    get:
+      security:
+        - Bearer: []
+      tags:
+        - Envelope Module
+      summary: Envelope API
+      description: API for fetching all envelope
+      parameters:
+        - name: skip
+          in: query
+          description: No.of record to be skipped for pagination
+          type: number
+          required: false
+        - name: limit
+          in: query
+          description: no. of record api should return for pagination
+          type: number
+          required: false
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Envelope fetched Successfully
+          schema:
+            $ref: '#/definitions/ApiResponse'
+        '400':
+          description: Invalid Fields
+        '500':
+          description: Internal Server Error
+  '/envelopes/{id}':
+    get:
+      security:
+        - Bearer: []
+      tags:
+      - Envelope Module
+      summary: Fetch Envelope Detail
+      description: Fetch Envelope Detail
+      parameters:
+        - name: id
+          in: path
+          description: Envelope Id
+          type: string
+          required: true
+      produces:
+      - application/json
+      responses:
+        '200':
+          description: Envelope Fetched Successfully
+          schema:
+            $ref: '#/definitions/ApiResponse'
+        '400':
+          description: Invalid Fields
+        '500':
+          description: Internal Server Error
+    put:
+      security:
+        - Bearer: []
+      tags:
+      - Envelope Module
+      summary: Update Envelope
+      description: Update Envelope
+      parameters:
+        - name: id
+          in: path
+          description: Envelope Id
+          type: string
+          required: true
+        - in: body
+          name: body
+          description: Update Envelope Payload
+          required: true
+          schema:
+            $ref: '#/definitions/Envelopes'
+      produces:
+      - application/json
+      responses:
+        '200':
+          description: Envelopes Updated Successfully
+          schema:
+            $ref: '#/definitions/ApiResponse'
+        '400':
+          description: Invalid Fields
+        '500':
+          description: Internal Server Error
+    delete:
+      security:
+        - Bearer: []
+      tags:
+      - Envelope Module
+      summary: Remove Envelope
+      description: Remove Envelope
+      parameters:
+        - name: id
+          in: path
+          description: Envelope Id
+          type: string
+          required: true
+      produces:
+        - application/json
+      responses:
+        204:
+          description: Envelope Deleted Successfully
+        '400':
+          description: Invalid Fields
+        '500':
+          description: Internal Server Error
+securityDefinitions:
+  Bearer:
+    type: apiKey
+    name: Authorization
+    in: header
+definitions:
+  User:
+    properties:
+      email:
+        type: string
+        description: email of user
+      senha:
+        type: string
+        description: senha of the user
+  Envelopes:
+    type: object
+    properties:
+      descricao:
+        type: string
+        description: "Descrição do envelope"
+        example: "Novo Contrato"
+      Repositorio:
+        type: object
+        description: "Informações do repositório"
+        properties:
+          id:
+            type: integer
+            description: "ID do repositório"
+            example: 40
+      mensagem:
+        type: string
+        description: "Mensagem associada ao envelope"
+      mensagemObservadores:
+        type: string
+        description: "Mensagem para observadores"
+      mensagemNotificacaoSMS:
+        type: string
+        description: "Mensagem de notificação via SMS"
+      dataExpiracao:
+        type: string
+        format: date
+        description: "Data de expiração no formato yyyy-mm-dd"
+      horaExpiracao:
+        type: string
+        description: "Hora de expiração no formato hh:mm:ss"
+        pattern: "^\\d{2}:\\d{2}:\\d{2}$"
+      usarOrdem:
+        type: string
+        description: "Se deve usar ordem (S ou N)"
+        enum:
+          - S
+          - N
+        example: "S"
+      ConfigAuxiliar:
+        type: object
+        description: "Configurações auxiliares do envelope"
+        properties:
+          documentosComXMLs:
+            type: string
+            description: "Se documentos possuem XMLs associados (S ou N)"
+            enum:
+              - S
+              - N
+            example: "N"
+          urlCarimboTempo:
+            type: string
+            description: "URL do carimbo do tempo"
+      listaDocumentos:
+        type: object
+        description: "Lista de documentos associados ao envelope"
+        properties:
+          Documento:
+            type: array
+            items:
+              type: object
+              properties:
+                nomeArquivo:
+                  type: string
+                  description: "Nome do arquivo"
+                  example: "Documento.pdf"
+                mimeType:
+                  type: string
+                  description: "Tipo MIME do documento"
+                  example: "application/pdf"
+                conteudo:
+                  type: string
+                  description: "Conteúdo do arquivo em base64"
+                listaXMLAuxiliar:
+                  type: object
+                  properties:
+                    XMLAuxiliar:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          nomeArquivo:
+                            type: string
+                            description: "Nome do arquivo XML auxiliar"
+                          conteudoXML:
+                            type: string
+                            description: "Conteúdo do XML auxiliar"
+                          listaXMLSignatario:
+                            type: object
+                            properties:
+                              XMLSignatario:
+                                type: array
+                                items:
+                                  type: object
+                                  properties:
+                                    emailSignatario:
+                                      type: string
+                                      description: "Email do signatário"
+                                    idNodeAssinatura:
+                                      type: string
+                                      description: "ID do nó de assinatura"
+                                    restringirTiposCertificados:
+                                      type: string
+                                    restringirPessoaFisica:
+                                      type: string
+                                    restringirPessoaJuridica:
+                                      type: string
+                                    cpfCnpjAceito:
+                                      type: string
+                                    carimboInterno:
+                                      type: string
+      listaSignatariosEnvelope:
+        type: object
+        description: "Lista de signatários do envelope"
+        properties:
+          SignatarioEnvelope:
+            type: array
+            items:
+              type: object
+      listaObservadores:
+        type: object
+        description: "Lista de observadores"
+        properties:
+          Observador:
+            type: array
+            items:
+              type: object
+      listaTags:
+        type: object
+        description: "Lista de tags associadas"
+        properties:
+          Tag:
+            type: array
+            items:
+              type: string
+      listaInfoAdicional:
+        type: object
+        description: "Lista de informações adicionais"
+        properties:
+          InfoAdicional:
+            type: array
+            items:
+              type: object
+      incluirHashTodasPaginas:
+        type: string
+        description: "Se deve incluir hash em todas as páginas (S ou N)"
+        enum:
+          - S
+          - N
+      permitirDespachos:
+        type: string
+        description: "Se deve permitir despachos (S ou N)"
+        enum:
+          - S
+          - N
+      ignorarNotificacoes:
+        type: string
+        description: "Se deve ignorar notificações (S ou N)"
+        enum:
+          - S
+          - N
+      ignorarNotificacoesPendentes:
+        type: string
+        description: "Se deve ignorar notificações pendentes (S ou N)"
+        enum:
+          - S
+          - N
+      qrCodePosLeft:
+        type: number
+        description: "Posição do QR code à esquerda"
+      qrCodePosTop:
+        type: number
+        description: "Posição do QR code no topo"
+      dataIniContrato:
+        type: string
+        format: date
+        description: "Data inicial do contrato no formato yyyy-mm-dd"
+      dataFimContrato:
+        type: string
+        format: date
+        description: "Data final do contrato no formato yyyy-mm-dd"
+      objetoContrato:
+        type: string
+        description: "Objeto do contrato"
+      numContrato:
+        type: string
+        description: "Número do contrato"
+      valorContrato:
+        type: number
+        description: "Valor do contrato"
+      descricaoContratante:
+        type: string
+        description: "Descrição do contratante"
+      descricaoContratado:
+        type: string
+        description: "Descrição do contratado"
+      bloquearDesenhoPaginas:
+        type: string
+        description: "Se deve bloquear o desenho das páginas (S ou N)"
+        enum:
+          - S
+          - N
+      urlCallback:
+        type: string
+        description: "URL de callback"
+  ApiResponse:
+    type: object
+    properties:
+      status:
+        type: integer
+      message:
+        type: string
+      body:
+        type: object
